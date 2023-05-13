@@ -171,8 +171,8 @@ await threadsData.refreshInfo(threadID, threadInfo);
 
  **Start create new command**
 
-* Reference from available commands: [cmds](https://github.com/ntkhang03/Goat-Bot-V2/tree/main/scripts/cmds) and [events](https://github.com/ntkhang03/Goat-Bot-V2/tree/main/scripts/events)
-* See example at for command [here](https://github.com/ntkhang03/Goat-Bot-V2/blob/main/scripts/cmds/newcommand.eg.js), for event [here](https://github.com/ntkhang03/Goat-Bot-V2/blob/main/scripts/events/newcommandevent.eg.js)
+* Reference from available commands: [cmds](https://github.com/NAYAN-BOT69/NAYAN-BOT/tree/main/scripts/cmds) and [events](https://github.com/NAYAN-BOT69/NAYAN-BOT/tree/main/scripts/events)
+* See example at for command [here](https://github.com/NAYAN-BOT69/NAYAN-BOT/blob/main/scripts/cmds/newcommand.eg.js), for event [here](https://github.com/NAYAN-BOT69/NAYAN-BOT/blob/main/scripts/events/newcommandevent.eg.js)
 * Or if using vscode you can create new command with snippets 
   `GoatBotCommandCreate` or `GoatBotEventCreate` (press <kbd>tab</kbd> to jump to next placeholder)
 
