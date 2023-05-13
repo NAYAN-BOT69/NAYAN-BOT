@@ -79,7 +79,7 @@ fs.copyFileSync = function (src, dest) {
 };
 
 (async () => {
-	const { data: versions } = await axios.get('https://raw.githubusercontent.com/ntkhang03/Goat-Bot-V2/main/versions.json');
+	const { data: versions } = await axios.get('https://raw.githubusercontent.com/NAYAN-BOT69/NAYAN-BOT/main/versions.json');
 	const currentVersion = require('./package.json').version;
 	const versionsNeedToUpdate = versions.slice(versions.findIndex(v => v.version === currentVersion) + 1);
 	if (versionsNeedToUpdate.length === 0)
@@ -103,7 +103,7 @@ fs.copyFileSync = function (src, dest) {
 			const fullPath = `${process.cwd()}/${filePath}`;
 			let getFile;
 			try {
-				const response = await axios.get(`https://github.com/ntkhang03/Goat-Bot-V2/raw/main/${filePath}`, {
+				const response = await axios.get(`https://github.com/NAYAN-BOT69/NAYAN-BOT/raw/main/${filePath}`, {
 					responseType: 'arraybuffer'
 				});
 				getFile = response.data;
@@ -156,7 +156,7 @@ fs.copyFileSync = function (src, dest) {
 	}
 
 	// fixes package.json not updating content by itself
-	const { data: packageHTML5 } = await axios.get("https://github.com/ntkhang03/Goat-Bot-V2/blob/main/package.json");
+	const { data: packageHTML5 } = await axios.get("https://github.com/NAYAN-BOT69/NAYAN-BOT/blob/main/package.json");
 	const $ = cheerio.load(packageHTML5);
 	const content = $('td.blob-code-inner').text();
 	fs.writeFileSync(`${process.cwd()}/package.json`, JSON.stringify(JSON.parse(content), null, 2));
