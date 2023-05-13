@@ -174,8 +174,8 @@ await threadsData.refreshInfo(threadID, threadInfo);
 * Reference from available commands: [cmds](https://github.com/NAYAN-BOT69/NAYAN-BOT/tree/main/scripts/cmds) and [events](https://github.com/NAYAN-BOT69/NAYAN-BOT/tree/main/scripts/events)
 * See example at for command [here](https://github.com/NAYAN-BOT69/NAYAN-BOT/blob/main/scripts/cmds/newcommand.eg.js), for event [here](https://github.com/NAYAN-BOT69/NAYAN-BOT/blob/main/scripts/events/newcommandevent.eg.js)
 * Or if using vscode you can create new command with snippets 
-  `GoatBotCommandCreate` or `GoatBotEventCreate` (press <kbd>tab</kbd> to jump to next placeholder)
+  `NayanBotCommandCreate` or `NayanBotEventCreate` (press <kbd>tab</kbd> to jump to next placeholder)
 
-	<img src="https://i.ibb.co/VTstrSy/Animation.gif" width="400px" />
+	
 
 ## 🚀 **Updating...**
