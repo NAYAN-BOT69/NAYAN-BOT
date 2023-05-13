@@ -4,7 +4,7 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function resolvePhotoUrl(photoID, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -21,29 +21,22 @@ module.exports = function (defaultFuncs, api, ctx) {
 			};
 		}
 
-		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
-		};
-
 		defaultFuncs
-			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
-				ctx.jar,
-				form
-			)
+			.get("https://www.facebook.com/mercury/attachments/photo", ctx.jar, {
+				photo_id: photoID
+			})
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
-			.then(function (resData) {
+			.then(resData => {
 				if (resData.error) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				const photoUrl = resData.jsmods.require[0][3][0];
+
+				return callback(null, photoUrl);
 			})
-			.catch(function (err) {
-				log.error("unfriend", err);
+			.catch(err => {
+				log.error("resolvePhotoUrl", err);
 				return callback(err);
 			});
 

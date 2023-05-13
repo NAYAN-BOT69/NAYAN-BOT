@@ -4,7 +4,7 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function changeThreadEmoji(emoji, threadID, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -13,37 +13,40 @@ module.exports = function (defaultFuncs, api, ctx) {
 		});
 
 		if (!callback) {
-			callback = function (err, friendList) {
+			callback = function (err) {
 				if (err) {
 					return rejectFunc(err);
 				}
-				resolveFunc(friendList);
+				resolveFunc();
 			};
 		}
-
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			emoji_choice: emoji,
+			thread_or_other_fbid: threadID
 		};
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/messaging/save_thread_emoji/?source=thread_settings&__pc=EXP1%3Amessengerdotcom_pkg",
 				ctx.jar,
 				form
 			)
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
+				if (resData.error === 1357031) {
+					throw {
+						error:
+							"Trying to change emoji of a chat that doesn't exist. Have at least one message in the thread before trying to change the emoji."
+					};
+				}
 				if (resData.error) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("changeThreadEmoji", err);
 				return callback(err);
 			});
 

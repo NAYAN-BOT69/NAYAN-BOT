@@ -4,33 +4,37 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function deleteThread(threadOrThreads, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
 			resolveFunc = resolve;
 			rejectFunc = reject;
 		});
-
 		if (!callback) {
-			callback = function (err, friendList) {
+			callback = function (err) {
 				if (err) {
 					return rejectFunc(err);
 				}
-				resolveFunc(friendList);
+				resolveFunc();
 			};
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			client: "mercury"
 		};
+
+		if (utils.getType(threadOrThreads) !== "Array") {
+			threadOrThreads = [threadOrThreads];
+		}
+
+		for (let i = 0; i < threadOrThreads.length; i++) {
+			form["ids[" + i + "]"] = threadOrThreads[i];
+		}
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/delete_thread.php",
 				ctx.jar,
 				form
 			)
@@ -40,10 +44,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("deleteThread", err);
 				return callback(err);
 			});
 

@@ -4,7 +4,13 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function handleFriendRequest(userID, accept, callback) {
+		if (utils.getType(accept) !== "Boolean") {
+			throw {
+				error: "Please pass a boolean as a second argument."
+			};
+		}
+
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -22,28 +28,31 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			viewer_id: ctx.i_userID || ctx.userID,
+			"frefs[0]": "jwl",
+			floc: "friend_center_requests",
+			ref: "/reqs.php",
+			action: (accept ? "confirm" : "reject")
 		};
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/requests/friends/ajax/",
 				ctx.jar,
 				form
 			)
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
-				if (resData.error) {
-					throw resData;
+				if (resData.payload.err) {
+					throw {
+						err: resData.payload.err
+					};
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("handleFriendRequest", err);
 				return callback(err);
 			});
 

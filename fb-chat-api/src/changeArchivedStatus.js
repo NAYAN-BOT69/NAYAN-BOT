@@ -4,7 +4,7 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function changeArchivedStatus(threadOrThreads, archive, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -13,24 +13,27 @@ module.exports = function (defaultFuncs, api, ctx) {
 		});
 
 		if (!callback) {
-			callback = function (err, friendList) {
+			callback = function (err) {
 				if (err) {
 					return rejectFunc(err);
 				}
-				resolveFunc(friendList);
+				resolveFunc();
 			};
 		}
 
-		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
-		};
+		const form = {};
+
+		if (utils.getType(threadOrThreads) === "Array") {
+			for (let i = 0; i < threadOrThreads.length; i++) {
+				form["ids[" + threadOrThreads[i] + "]"] = archive;
+			}
+		} else {
+			form["ids[" + threadOrThreads + "]"] = archive;
+		}
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/change_archived_status.php",
 				ctx.jar,
 				form
 			)
@@ -40,10 +43,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("changeArchivedStatus", err);
 				return callback(err);
 			});
 

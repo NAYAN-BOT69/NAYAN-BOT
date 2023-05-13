@@ -4,7 +4,7 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function markAsReadAll(callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -22,28 +22,26 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			folder: 'inbox'
 		};
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/mark_folder_as_read.php",
 				ctx.jar,
 				form
 			)
+			.then(utils.saveCookies(ctx.jar))
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
 				if (resData.error) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("markAsReadAll", err);
 				return callback(err);
 			});
 

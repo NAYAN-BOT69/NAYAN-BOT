@@ -3,8 +3,22 @@
 const utils = require("../utils");
 const log = require("npmlog");
 
+function formatData(data) {
+	return {
+		userID: utils.formatID(data.uid.toString()),
+		photoUrl: data.photo,
+		indexRank: data.index_rank,
+		name: data.text,
+		isVerified: data.is_verified,
+		profileUrl: data.path,
+		category: data.category,
+		score: data.score,
+		type: data.type
+	};
+}
+
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function getUserID(name, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -22,28 +36,28 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			value: name.toLowerCase(),
+			viewer: ctx.i_userID || ctx.userID,
+			rsp: "search",
+			context: "search",
+			path: "/home.php",
+			request_id: utils.getGUID()
 		};
 
 		defaultFuncs
-			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
-				ctx.jar,
-				form
-			)
+			.get("https://www.facebook.com/ajax/typeahead/search.php", ctx.jar, form)
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
 				if (resData.error) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				const data = resData.payload.entries;
+
+				callback(null, data.map(formatData));
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("getUserID", err);
 				return callback(err);
 			});
 

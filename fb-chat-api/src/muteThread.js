@@ -4,7 +4,8 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	// muteSecond: -1=permanent mute, 0=unmute, 60=one minute, 3600=one hour, etc.
+	return function muteThread(threadID, muteSeconds, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -22,28 +23,27 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			thread_fbid: threadID,
+			mute_settings: muteSeconds
 		};
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/change_mute_thread.php",
 				ctx.jar,
 				form
 			)
+			.then(utils.saveCookies(ctx.jar))
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
 				if (resData.error) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("muteThread", err);
 				return callback(err);
 			});
 

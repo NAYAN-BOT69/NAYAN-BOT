@@ -1,10 +1,9 @@
 "use strict";
 
 const utils = require("../utils");
-const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function searchForThread(name, callback) {
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -21,30 +20,32 @@ module.exports = function (defaultFuncs, api, ctx) {
 			};
 		}
 
-		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+		const tmpForm = {
+			client: "web_messenger",
+			query: name,
+			offset: 0,
+			limit: 21,
+			index: "fbid"
 		};
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/search_threads.php",
 				ctx.jar,
-				form
+				tmpForm
 			)
 			.then(utils.parseAndCheckLogin(ctx, defaultFuncs))
 			.then(function (resData) {
 				if (resData.error) {
 					throw resData;
 				}
-
-				return callback(null, true);
-			})
-			.catch(function (err) {
-				log.error("unfriend", err);
-				return callback(err);
+				if (!resData.payload.mercury_payload.threads) {
+					return callback({ error: "Could not find thread `" + name + "`." });
+				}
+				return callback(
+					null,
+					resData.payload.mercury_payload.threads.map(utils.formatThread)
+				);
 			});
 
 		return returnPromise;

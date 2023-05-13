@@ -4,7 +4,13 @@ const utils = require("../utils");
 const log = require("npmlog");
 
 module.exports = function (defaultFuncs, api, ctx) {
-	return function unfriend(userID, callback) {
+	return function handleMessageRequest(threadID, accept, callback) {
+		if (utils.getType(accept) !== "Boolean") {
+			throw {
+				error: "Please pass a boolean as a second argument."
+			};
+		}
+
 		let resolveFunc = function () { };
 		let rejectFunc = function () { };
 		const returnPromise = new Promise(function (resolve, reject) {
@@ -22,15 +28,22 @@ module.exports = function (defaultFuncs, api, ctx) {
 		}
 
 		const form = {
-			uid: userID,
-			unref: "bd_friends_tab",
-			floc: "friends_tab",
-			"nctr[_mod]": "pagelet_timeline_app_collection_" + (ctx.i_userID || ctx.userID) + ":2356318349:2"
+			client: "mercury"
 		};
+
+		if (utils.getType(threadID) !== "Array") {
+			threadID = [threadID];
+		}
+
+		const messageBox = accept ? "inbox" : "other";
+
+		for (let i = 0; i < threadID.length; i++) {
+			form[messageBox + "[" + i + "]"] = threadID[i];
+		}
 
 		defaultFuncs
 			.post(
-				"https://www.facebook.com/ajax/profile/removefriendconfirm.php",
+				"https://www.facebook.com/ajax/mercury/move_thread.php",
 				ctx.jar,
 				form
 			)
@@ -40,10 +53,10 @@ module.exports = function (defaultFuncs, api, ctx) {
 					throw resData;
 				}
 
-				return callback(null, true);
+				return callback();
 			})
 			.catch(function (err) {
-				log.error("unfriend", err);
+				log.error("handleMessageRequest", err);
 				return callback(err);
 			});
 
