@@ -162,7 +162,7 @@ global.utils.getText = getText;
 if (config.autoRestart) {
 	const time = config.autoRestart.time;
 	if (!isNaN(time) && time > 0) {
-		utils.log.info("AUTO RESTART", getText("Nayan", "autoRestart1", utils.convertTime(time, true)));
+		utils.log.info("AUTO RESTART", getText("Goat", "autoRestart1", utils.convertTime(time, true)));
 		setTimeout(() => {
 			utils.log.info("AUTO RESTART", "Restarting...");
 			process.exit(2);
@@ -237,7 +237,7 @@ if (config.autoRestart) {
 	const { data: { version } } = await axios.get("https://raw.githubusercontent.com/NAYAN-BOT69/NAYAN-BOT/main/package.json");
 	const currentVersion = require("./package.json").version;
 	if (compareVersion(version, currentVersion) === 1)
-		utils.log.master("NEW VERSION", getText("NAYAN", "newVersionDetected", colors.gray(currentVersion), colors.hex("#eb6a07", version)));
+		utils.log.master("NEW VERSION", getText("Goat", "newVersionDetected", colors.gray(currentVersion), colors.hex("#eb6a07", version)));
 	// —————————— CHECK FOLDER GOOGLE DRIVE —————————— //
 	const parentIdGoogleDrive = await utils.drive.checkAndCreateParentFolder("GoatBot");
 	utils.drive.parentID = parentIdGoogleDrive;
