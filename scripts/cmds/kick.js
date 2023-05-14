@@ -1,8 +1,8 @@
 module.exports = {
 	config: {
 		name: "kick",
-		version: "1.1",
-		author: "NTKhang",
+		version: "2.0",
+		author: "NAYAN",
 		countDown: 5,
 		role: 1,
 		shortDescription: {
