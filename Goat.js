@@ -20,7 +20,7 @@ const dirAccount = `${__dirname}/account${['production', 'development'].includes
 const config = require(dirConfig);
 const configCommands = require(dirConfigCommands);
 
-global.NayanBot = {
+global.GoatBot = {
 	startTime: Date.now() - process.uptime() * 1000, // time start bot (ms)
 	commands: new Map(), // store all commands
 	eventCommands: new Map(), // store all event commands
