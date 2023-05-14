@@ -1,7 +1,8 @@
 /** 
  * @author NTKhang
+ * @Customize NAYAN
  * ! The source code is written by NTKhang, please don't change the author's name everywhere. Thank you for using 
- */
+ * !  The source code customize by Nayan
 
 const { spawn } = require("child_process");
 const gradient = require("gradient-string");
@@ -91,7 +92,7 @@ if (subTitle.length > maxWidth) {
 else {
 	subTitleArray.push(subTitle);
 }
-const author = 'Created by NTKhang';
+const author = 'Customize by Nayan';
 const srcUrl = 'Source code: https://github.com/NAYAN-BOT69/NAYAN-BOT';
 for (const t of subTitleArray) {
 	const textColor2 = gradient("#9F98E8", "#AFF6CF")(t);
