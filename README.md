@@ -195,7 +195,7 @@ Summary instructions:
 </details>
 
 ## ✨ **Copyright (C)**
-- **[NTKhang (NTKhang03)](https://github.com/ntkhang03)**
+- **[NAYAN (NAYAN-BIT69)](https://github.com/NAYAN-BIT69)**
 
 ## 📜 **License**
 
