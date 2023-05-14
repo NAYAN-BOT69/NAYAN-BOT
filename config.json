@@ -19,8 +19,8 @@
   "adminBot": [
     "100010427028569"
   ],
-  "nickNameBot": "",
-  "prefix": "/",
+  "nickNameBot": "NAYAN-BOT",
+  "prefix": "!",
   "database": {
     "type": "sqlite",
     "uriMongodb": "mongodb+srv://Jun:s5l9cbebvuYIzMIU@cluster0.efcpcf3.mongodb.net/?retryWrites=true&w=majority",
