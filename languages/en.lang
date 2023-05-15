@@ -1,8 +1,8 @@
 # index.js
-Goat.newVersionDetected=You are using version %1, the latest version is %2. Please update to use the bot better by typing into the console/cmd command: node update
-Goat.autoRestart1=Bot will auto restart in %1
-Goat.autoRestart2=Bot will auto restart by cron job: %1
-Goat.googleApiTokenExpired=Google API refresh token has expired or been revoked, please get a new token at https://developers.google.com/oauthplayground/
+Nayan.newVersionDetected=You are using version %1, the latest version is %2. Please update to use the bot better by typing into the console/cmd command: node update
+Nayan.autoRestart1=Bot will auto restart in %1
+Nayan.autoRestart2=Bot will auto restart by cron job: %1
+Nayan.googleApiTokenExpired=Google API refresh token has expired or been revoked, please get a new token at https://developers.google.com/oauthplayground/
 
 # bot/login/login.js
 login.currentlyLogged=Login in progress
@@ -40,14 +40,14 @@ login.changeGbanData=DATA HAS BEEN CHANGED, IT IS CURRENTLY IMPOSSIBLE TO LAUNCH
 login.errorNoti=An error occurred when retrieving the message
 login.refreshFbstateSuccess=Refreshed %1 file
 login.refreshFbstateError=An error occurred when refreshing the %1 file
-login.youAreBanned=You have been banned from the Goat-Bot project
+login.youAreBanned=You have been banned from the Nayan-Bot project
 login.runBot=Launch bot successfully, start receiving messages from users
 login.notLoggedIn=An error occurred, please check your Facebook account again
 login.callBackError=An error occurred when callback listenMqtt
 login.userBanned=You've been banned from using a bot!!
 login.checkGbanError=An error occurred while checking GBAN
-login.gbanMessage=You have been banned from the Goat-Bot project on %1 for the reason: %2
-login.gbanAdminMessage=User %1 has been banned from the Goat-Bot project on %2 for the reason: %3
+login.gbanMessage=You have been banned from the Nayan-Bot project on %1 for the reason: %2
+login.gbanAdminMessage=User %1 has been banned from the Nayan-Bot project on %2 for the reason: %3
 login.openServerUptimeSuccess=🚀 Opened uptime server: %1
 login.openServerUptimeError=An error has occurred, cannot open server uptime
 login.restartListenMessage=ListenMQTT restart enabled every %1
@@ -56,6 +56,7 @@ login.restartListenMessageError=An error occurred when restarting ListenMQTT
 login.restartListenMessage2=Successfully restarted ListenMQTT
 login.refreshCookieAfter=Refreshing cookie after %1
 login.listenMqttClose=ListenMQTT closed
+login.listenMqttCloseByUser=ListenMQTT closed by user
 login.retryCheckLiveCookie=Retrying to check cookie... %1
 
 # bot/login/loadData.js
