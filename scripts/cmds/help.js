@@ -3,7 +3,7 @@ const axios = require("axios");
 const path = require("path");
 const { getPrefix } = global.utils;
 const { commands, aliases } = global.GoatBot;
-const doNotDelete = "[ 🐐 | Goat Bot V2 ]";
+const doNotDelete = "[ NAYAN-BOT ]";
 /** 
 * @author NTKhang
 * @author: do not delete it
@@ -13,8 +13,8 @@ const doNotDelete = "[ 🐐 | Goat Bot V2 ]";
 module.exports = {
 	config: {
 		name: "help",
-		version: "1.14",
-		author: "NTKhang",
+		version: "1.15",
+		author: "NAYAN",
 		countDown: 5,
 		role: 0,
 		shortDescription: {
@@ -129,11 +129,11 @@ module.exports = {
 			else if (sortHelp == "category") {
 				for (const [, value] of commands) {
 					if (value.config.role > 1 && role < value.config.role)
-						continue;
-					if (arrayInfo.some(item => item.category == value.config.category.toLowerCase())) {
-						const index = arrayInfo.findIndex(item => item.category == value.config.category.toLowerCase());
-						arrayInfo[index].names.push(value.config.name);
-					}
+						continue; // if role of command > role of user => skip
+					const indexCategory = arrayInfo.findIndex(item => (item.category || "NO CATEGORY") == (value.config.category?.toLowerCase() || "NO CATEGORY"));
+
+					if (indexCategory != -1)
+						arrayInfo[indexCategory].names.push(value.config.name);
 					else
 						arrayInfo.push({
 							category: value.config.category.toLowerCase(),
