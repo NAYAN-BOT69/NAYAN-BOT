@@ -1627,7 +1627,7 @@
     }
   },
   {
-    "version": "1.3.22",
+    "version": "1.3.23",
     "files": {
       "scripts/cmds/tik.js": "text update `Coded By MOHAMMAD NAYAN`"
     }
