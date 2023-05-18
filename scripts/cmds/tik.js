@@ -12,9 +12,9 @@ module.exports = {
 
 		aliases: ["tiktok"],
 
-		version: "1.8",
+		version: "1.9",
 
-		author: "NTKhang",
+		author: "Nayan",
 
 		countDown: 5,
 
