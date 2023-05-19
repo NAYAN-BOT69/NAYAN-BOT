@@ -1,46 +1,24 @@
 const axios = require("axios");
-const ytdl = require("ytdl-core");
-const fs = require("fs-extra");
-const { getStreamFromURL, downloadFile } = global.utils;
-async function getStreamAndSize(url, path = "") {
-	const response = await axios({
-		method: "GET",
-		url,
-		responseType: "stream",
-		headers: {
-			'Range': 'bytes=0-'
-		}
-	});
-	if (path)
-		response.data.path = path;
-	const totalLength = response.headers["content-length"];
-	return {
-		stream: response.data,
-		size: totalLength
-	};
-}
+const qs = require("qs");
+const https = require("https");
+const agent = new https.Agent({
+	rejectUnauthorized: false
+});
+const { getStreamFromURL, downloadFile, convertTime } = global.utils;
 
 module.exports = {
 	config: {
 		name: "ytb",
-		version: "1.13",
-		author: "Nayan",
+		version: "1.6",
+		author: "NTKhang | Nayan",
 		countDown: 5,
 		role: 0,
 		shortDescription: "YouTube",
 		longDescription: {
-			vi: "Tải video, audio hoặc xem thông tin video trên YouTube",
 			en: "Download video, audio or view video information on YouTube"
 		},
 		category: "media",
 		guide: {
-			vi: "   {pn} [video|-v] [<tên video>|<link video>]: dùng để tải video từ youtube."
-				+ "\n   {pn} [audio|-a] [<tên video>|<link video>]: dùng để tải audio từ youtube"
-				+ "\n   {pn} [info|-i] [<tên video>|<link video>]: dùng để xem thông tin video từ youtube"
-				+ "\n   Ví dụ:"
-				+ "\n    {pn} -v Fallen Kingdom"
-				+ "\n    {pn} -a Fallen Kingdom"
-				+ "\n    {pn} -i Fallen Kingdom",
 			en: "   {pn} [video|-v] [<video name>|<video link>]: use to download video from youtube."
 				+ "\n   {pn} [audio|-a] [<video name>|<video link>]: use to download audio from youtube"
 				+ "\n   {pn} [info|-i] [<video name>|<video link>]: use to view video information from youtube"
@@ -52,30 +30,15 @@ module.exports = {
 	},
 
 	langs: {
-		vi: {
-			error: "❌ Đã xảy ra lỗi: %1",
-			noResult: "⭕ Không có kết quả tìm kiếm nào phù hợp với từ khóa %1",
-			choose: "%1Reply tin nhắn với số để chọn hoặc nội dung bất kì để gỡ",
-			video: "video",
-			audio: "âm thanh",
-			downloading: "⬇️ Đang tải xuống %1 \"%2\"",
-			downloading2: "⬇️ Đang tải xuống %1 \"%2\"\n🔃 Tốc độ: %3MB/s\n⏸️ Đã tải: %4/%5MB (%6%)\n⏳ Ước tính thời gian còn lại: %7 giây",
-			noVideo: "⭕ Rất tiếc, không tìm thấy video nào có dung lượng nhỏ hơn 83MB",
-			noAudio: "⭕ Rất tiếc, không tìm thấy audio nào có dung lượng nhỏ hơn 26MB",
-			info: "💠 Tiêu đề: %1\n🏪 Channel: %2\n👨‍👩‍👧‍👦 Subscriber: %3\n⏱ Thời gian video: %4\n👀 Lượt xem: %5\n👍 Lượt thích: %6\n🆙 Ngày tải lên: %7\n🔠 ID: %8\n🔗 Link: %9",
-			listChapter: "\n📖 Danh sách phân đoạn: %1\n"
-		},
 		en: {
 			error: "❌ An error occurred: %1",
 			noResult: "⭕ No search results match the keyword %1",
 			choose: "%1Reply to the message with a number to choose or any content to cancel",
-			video: "video",
-			audio: "audio",
-			downloading: "⬇️ Downloading %1 \"%2\"",
-			downloading2: "⬇️ Downloading %1 \"%2\"\n🔃 Speed: %3MB/s\n⏸️ Downloaded: %4/%5MB (%6%)\n⏳ Estimated time remaining: %7 seconds",
+			downloading: "⬇️𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐯𝐢𝐝𝐞𝐨\n\n\"%1\"",
 			noVideo: "⭕ Sorry, no video was found with a size less than 83MB",
+			downloadingAudio: "⬇️𝐃𝐨𝐰𝐧𝐥𝐨𝐚𝐝𝐢𝐧𝐠 𝐚𝐮𝐝𝐢𝐨\n\n\"%1\"",
 			noAudio: "⭕ Sorry, no audio was found with a size less than 26MB",
-			info: "💠 Title: %1\n🏪 Channel: %2\n👨‍👩‍👧‍👦 Subscriber: %3\n⏱ Video duration: %4\n👀 View count: %5\n👍 Like count: %6\n🆙 Upload date: %7\n🔠 ID: %8\n🔗 Link: %9",
+			info: "💠 Title: %1\n🏪 Channel: %2\n👨‍👩‍👧‍👦 Subscriber: %3\n⏱ Video time: %4\n👀 View: %5\n👍 Like: %6\n🆙 Upload date: %7\n🔠 ID: %8\n🔗 Link: %9",
 			listChapter: "\n📖 List chapter: %1\n"
 		}
 	},
@@ -111,7 +74,7 @@ module.exports = {
 		}
 
 		const keyWord = args.slice(1).join(" ");
-		const maxResults = 6;
+		const maxResults = 10;
 
 		let result;
 		try {
@@ -129,7 +92,7 @@ module.exports = {
 
 		for (const info of result) {
 			thumbnails.push(getStreamFromURL(info.thumbnail));
-			msg += `${i++}. ${info.title}\nTime: ${info.time}\nChannel: ${info.channel.name}\n\n`;
+			msg += `✅${i++}. ${info.title}\nTime: ${info.time}\nChannel: ${info.channel.name}\n\n`;
 		}
 
 		message.reply({
@@ -150,7 +113,7 @@ module.exports = {
 	onReply: async ({ event, api, Reply, message, getLang }) => {
 		const { result, type } = Reply;
 		const choice = event.body;
-		if (!isNaN(choice) && choice <= 6) {
+		if (!isNaN(choice) && choice <= 10) {
 			const infoChoice = result[choice - 1];
 			const idvideo = infoChoice.id;
 			const infoVideo = await getVideoInfo(idvideo);
@@ -163,100 +126,33 @@ module.exports = {
 };
 
 async function handle({ type, infoVideo, message, getLang }) {
-	const { title, videoId } = infoVideo;
+	const { video_url, title } = infoVideo;
 
 	if (type == "video") {
 		const MAX_SIZE = 87031808; // 83MB (max size of video that can be sent on fb)
-		const msgSend = message.reply(getLang("downloading", getLang("video"), title));
-		const { formats } = await ytdl.getInfo(videoId);
-		const getFormat = formats
-			.filter(f => f.hasVideo && f.hasAudio)
-			.sort((a, b) => b.contentLength - a.contentLength)
-			.find(f => f.contentLength || 0 < MAX_SIZE);
+		const msgSend = message.reply(getLang("downloading", title));
+		const formats = await getFormatsUrl(video_url);
+		const getFormat = (formats.find(f => f.type === "mp4").qualitys.filter(f => f.size < MAX_SIZE) || [])[0];
 		if (!getFormat)
 			return message.reply(getLang("noVideo"));
-		const getStream = await getStreamAndSize(getFormat.url, `${videoId}.mp4`);
-		if (getStream.size > MAX_SIZE)
-			return message.reply(getLang("noVideo"));
-
-		const savePath = __dirname + `/tmp/${videoId}_${Date.now()}.mp4`;
-		const writeStrean = fs.createWriteStream(savePath);
-		const startTime = Date.now();
-		getStream.stream.pipe(writeStrean);
-		const contentLength = getStream.size;
-		let downloaded = 0;
-		let count = 0;
-
-		getStream.stream.on("data", (chunk) => {
-			downloaded += chunk.length;
-			count++;
-			if (count == 5) {
-				const endTime = Date.now();
-				const speed = downloaded / (endTime - startTime) * 1000;
-				const timeLeft = (contentLength / downloaded * (endTime - startTime)) / 1000;
-				const percent = downloaded / contentLength * 100;
-				if (timeLeft > 30) // if time left > 30s, send message
-					message.reply(getLang("downloading2", getLang("video"), title, Math.floor(speed / 1000) / 1000, Math.floor(downloaded / 1000) / 1000, Math.floor(contentLength / 1000) / 1000, Math.floor(percent), timeLeft.toFixed(2)));
-			}
-		});
-		writeStrean.on("finish", () => {
-			message.reply({
-				body: title,
-				attachment: fs.createReadStream(savePath)
-			}, async (err) => {
-				if (err)
-					return message.reply(getLang("error", err.message));
-				fs.unlinkSync(savePath);
-				message.unsend((await msgSend).messageID);
-			});
-		});
+		const stream = await getStreamFromURL(getFormat.dlink, `${title}.mp4`, { httpsAgent: agent });
+		message.reply({
+			body: title,
+			attachment: stream
+		}, async () => message.unsend((await msgSend).messageID));
 	}
 	else if (type == "audio") {
 		const MAX_SIZE = 27262976; // 26MB (max size of audio that can be sent on fb)
-		const msgSend = message.reply(getLang("downloading", getLang("audio"), title));
-		const { formats } = await ytdl.getInfo(videoId);
-		const getFormat = formats
-			.filter(f => f.hasAudio && !f.hasVideo)
-			.sort((a, b) => b.contentLength - a.contentLength)
-			.find(f => f.contentLength || 0 < MAX_SIZE);
+		const msgSend = message.reply(getLang("downloadingAudio", title));
+		const formats = await getFormatsUrl(video_url);
+		const getFormat = (formats.find(f => f.type === "mp3").qualitys.filter(f => f.size < MAX_SIZE) || [])[0];
 		if (!getFormat)
 			return message.reply(getLang("noAudio"));
-		const getStream = await getStreamAndSize(getFormat.url, `${videoId}.mp3`);
-		if (getStream.size > MAX_SIZE)
-			return message.reply(getLang("noAudio"));
-
-		const savePath = __dirname + `/tmp/${videoId}_${Date.now()}.mp3`;
-		const writeStrean = fs.createWriteStream(savePath);
-		const startTime = Date.now();
-		getStream.stream.pipe(writeStrean);
-		const contentLength = getStream.size;
-		let downloaded = 0;
-		let count = 0;
-
-		getStream.stream.on("data", (chunk) => {
-			downloaded += chunk.length;
-			count++;
-			if (count == 5) {
-				const endTime = Date.now();
-				const speed = downloaded / (endTime - startTime) * 1000;
-				const timeLeft = (contentLength / downloaded * (endTime - startTime)) / 1000;
-				const percent = downloaded / contentLength * 100;
-				if (timeLeft > 30) // if time left > 30s, send message
-					message.reply(getLang("downloading2", getLang("audio"), title, Math.floor(speed / 1000) / 1000, Math.floor(downloaded / 1000) / 1000, Math.floor(contentLength / 1000) / 1000, Math.floor(percent), timeLeft.toFixed(2)));
-			}
-		});
-
-		writeStrean.on("finish", () => {
-			message.reply({
-				body: title,
-				attachment: fs.createReadStream(savePath)
-			}, async (err) => {
-				if (err)
-					return message.reply(getLang("error", err.message));
-				fs.unlinkSync(savePath);
-				message.unsend((await msgSend).messageID);
-			});
-		});
+		const stream = await getStreamFromURL(getFormat.dlink, `${title}.mp3`, { httpsAgent: agent });
+		message.reply({
+			body: title,
+			attachment: stream
+		}, async () => message.unsend((await msgSend).messageID));
 	}
 	else if (type == "info") {
 		const { title, lengthSeconds, viewCount, videoId, uploadDate, likes, channel, chapters } = infoVideo;
@@ -281,6 +177,78 @@ async function handle({ type, infoVideo, message, getLang }) {
 			])
 		});
 	}
+}
+
+
+async function getFormatsUrl(url) {
+	const response = await axios.post("https://9convert.com/api/ajaxSearch/index", qs.stringify({
+		query: url,
+		vt: "home"
+	}));
+
+	const videoId = response.data.vid;
+	const { data } = response;
+	for (const key in data.links) {
+		for (const key2 in data.links[key]) {
+			data.links[key][key2] = {
+				...data.links[key][key2],
+				dataConvert: convert(videoId, data.links[key][key2].k)
+			};
+		}
+	}
+
+	for (const key in data.links) {
+		for (const key2 in data.links[key]) {
+			data.links[key][key2] = { ...data.links[key][key2], ...(await data.links[key][key2].dataConvert) };
+			delete data.links[key][key2].dataConvert;
+		}
+	}
+
+	// format data to array
+	const linksFormat = [];
+	for (const key in data.links) {
+		const qualitys = [];
+		for (const key2 in data.links[key]) {
+			const format = data.links[key][key2];
+
+			let size;
+			if (format.size.includes("KB"))
+				size = parseInt(format.size.replace("KB", "")) * 1024;
+			if (format.size.includes("MB"))
+				size = parseInt((format.size.match(/\d+/) || ['0'])[0]) * 1024 * 1024;
+			if (format.size.includes("GB"))
+				size = parseInt((format.size.match(/\d+/) || ['0'])[0]) * 1024 * 1024 * 1024;
+
+			qualitys.push({
+				size,
+				dlink: format.dlink,
+				f: format.f,
+				q: format.d,
+				ftype: format.ftype
+			});
+		}
+
+		qualitys.sort((a, b) => a.size + b.size);
+
+		linksFormat.push({
+			type: key,
+			qualitys
+		});
+	}
+
+	data.links = linksFormat.sort((a, b) => b.size - a.size);
+	return data.links;
+}
+
+function convert(videoId, k) {
+	return new Promise((resolve, reject) => {
+		axios.post("https://9convert.com/api/ajaxConvert/convert", qs.stringify({
+			vid: videoId,
+			k
+		}))
+			.then(res => resolve(res.data))
+			.catch(err => reject(err));
+	});
 }
 
 async function search(keyWord) {
@@ -340,7 +308,7 @@ async function getVideoInfo(id) {
 		lengthSeconds: lengthSeconds.match(/\d+/)[0],
 		viewCount: viewCount.match(/\d+/)[0],
 		uploadDate: json.microformat.playerMicroformatRenderer.uploadDate,
-		likes: json2.contents.twoColumnWatchNextResults.results.results.contents.find(x => x.videoPrimaryInfoRenderer).videoPrimaryInfoRenderer.videoActions.menuRenderer.topLevelButtons.find(x => x.segmentedLikeDislikeButtonRenderer).segmentedLikeDislikeButtonRenderer.likeButton.toggleButtonRenderer.defaultText.accessibility?.accessibilityData.label.replace(/\.|,/g, '').match(/\d+/)?.[0] || 0,
+		likes: json2.contents.twoColumnWatchNextResults.results.results.contents.find(x => x.videoPrimaryInfoRenderer).videoPrimaryInfoRenderer.videoActions.menuRenderer.topLevelButtons.find(x => x.segmentedLikeDislikeButtonRenderer).segmentedLikeDislikeButtonRenderer.likeButton.toggleButtonRenderer.defaultText.accessibility.accessibilityData.label.replace(/\.|,/g, '').match(/\d+/)[0],
 		chapters: getChapters.map((x, i) => {
 			const start_time = x.chapterRenderer.timeRangeStartMillis;
 			const end_time = getChapters[i + 1]?.chapterRenderer?.timeRangeStartMillis || lengthSeconds.match(/\d+/)[0] * 1000;
