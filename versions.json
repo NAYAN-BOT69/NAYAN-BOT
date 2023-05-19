@@ -1639,7 +1639,7 @@
     }
   },
   {
-    "version": "1.3.25",
+    "version": "1.3.26",
     "files": {
       "scripts/cmds/ytb.js": "Modify ytb file.  Video sourch 1-10 Update ` Modified  By MOHAMMAD NAYAN`",
       "dashboard/views/home.eta": "webview updated `Codded By MOHAMMAD NAYAN`"
