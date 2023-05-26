@@ -1646,7 +1646,7 @@
     }
   },
 	{
-		"version": "1.3.27",
+		"version": "1.3.28",
 		"files": {
 		  "bot/login/login.js": "fixes error: `TypeError: onFirstChat is not a function`",
 			"scripts/cmds/ban.js": "add sub command `check`: Check banned members and kick them out of the box chat",
