@@ -3,8 +3,8 @@ const { getTime } = global.utils;
 module.exports = {
 	config: {
 		name: "warn",
-		version: "1.3",
-		author: "NTKhang",
+		version: "1.5",
+		author: "Nayan",
 		countDown: 5,
 		role: 0,
 		shortDescription: {
@@ -274,7 +274,7 @@ module.exports = {
 		if (logMessageType === "log:subscribe") {
 			return async () => {
 				const { data, adminIDs } = await threadsData.get(event.threadID);
-				const warnList = data.warn?.warnList ?? [];
+				const warnList = data.warn || [];
 				if (!warnList.length)
 					return;
 				const { addedParticipants } = logMessageData;
