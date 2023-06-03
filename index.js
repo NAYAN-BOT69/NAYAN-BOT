@@ -1,4 +1,7 @@
-
+/** 
+ * @author NTKhang
+ * ! The source code is written by NTKhang, please don't change the author's name everywhere. Thank you for using 
+ */
 
 const { spawn } = require("child_process");
 const gradient = require("gradient-string");
@@ -19,7 +22,18 @@ function startProject() {
 	});
 }
 
-
+/**
+ * @author NTKhang
+ * English:
+ * ! Please do not change the below code, it is very important for the project. It is my motivation to maintain and develop the project for free.
+ * ! If you change it, you will be banned
+ * * Thank you for using
+ * 
+ * Vietnamese:
+ * ! Vui lòng không thay đổi mã bên dưới, nó rất quan trọng đối với dự án. Nó là động lực để tôi duy trì và phát triển dự án miễn phí.
+ * ! Nếu thay đổi nó, bạn sẽ bị cấm
+ * * Cảm ơn bạn đã sử dụng
+ */
 
 
 function centerText(text, length) {
@@ -34,22 +48,7 @@ function centerText(text, length) {
 
 const currentVersion = require("./package.json").version;
 
-const titles = [
-	[
-		
-	],
-	[
-		"+-+-+-+-+-+ +-+-+-+",
-		"|N|A|Y|A|N| |B|O|T|",
-    "+-+-+-+-+-+ +-+-+-+",
-	],
-	[
-		`N A Y A N B O T  @ ${currentVersion}`
-	],
-	[
-		"NAYANBOT "
-	]
-];
+var _0x5f70=["\x2B\x2D\x2B\x2D\x2B\x2D\x2B\x2D\x2B\x2D\x2B\x20\x2B\x2D\x2B\x2D\x2B\x2D\x2B","\x7C\x4E\x7C\x41\x7C\x59\x7C\x41\x7C\x4E\x7C\x20\x7C\x42\x7C\x4F\x7C\x54\x7C","\x4E\x20\x41\x20\x59\x20\x41\x20\x4E\x20\x42\x20\x4F\x20\x54\x20\x20\x40\x20","","\x4E\x41\x59\x41\x4E\x42\x4F\x54\x20"];const titles=[[],[_0x5f70[0],_0x5f70[1],_0x5f70[0]],[`${_0x5f70[2]}${currentVersion}${_0x5f70[3]}`],[_0x5f70[4]]]
 const maxWidth = process.stdout.columns;
 const title = maxWidth > 58 ?
 	titles[0] :
